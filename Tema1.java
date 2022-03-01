@@ -1,9 +1,61 @@
-import java.util.ArrayList;
+import T1.Adjacency;
+
+
 
 public class Tema1 {
-    public static void main (String args[]) {
-        if (args.length < 3)
-            System.out.println("Introduceti n,p nr. naturale si cel putin o litera din alfabet!");
+    static int findCycle(int index, boolean[][] neighbors, int n, int[] found,String[] words,String[] used_words) {
+        int ok=0;
+        int done=0;
+        used_words[found[index]-1]=words[index];
+        for(int j=0;j<found[index]-1;++j) {
+            if (words[index].equals(used_words[j])) {
+
+                return 0;
+
+            }
+        }
+
+        for (int i = 0; i < n; ++i) {
+            if (neighbors[index][i] && index != i)
+            {
+                if (found[i] == 0) {
+                    found[i] = found[index] + 1;
+                    done = findCycle(i, neighbors, n, found,words,used_words);
+                    if(done!=0)
+                        break;
+                } else {
+                    if (found[i] + 2 <= found[index]) {
+                        System.out.println(words[index]);
+                        return i+1;
+                    }
+                }
+            }
+        }
+        if (done > 0) {
+            if (done-1 != index) {
+                 System.out.println(words[index]);
+                return done;
+            } else {
+                System.out.println(words[index]);
+                return -1;
+            }
+        }
+        if(done<0)
+        {
+            return -1;
+        }
+
+        return 0;
+    }
+
+
+    public static void main (String[] args) {
+
+        long startTime = System.nanoTime();
+        if (args.length < 3) {
+            System.out.println("Introduceti n si p (nr. naturale) si cel putin o litera din alfabet!");
+            return;
+        }
         for (int i = 0; i < args[0].length(); ++i) {
             if (!Character.isDigit(args[0].charAt(i))) {
                 System.out.println("n trebuie sa fie un nr. intreg!");
@@ -45,20 +97,19 @@ public class Tema1 {
             }
             alphabet[k++] = current_char;
         }
-        ArrayList<String> words = new ArrayList<>();
-        String temp;
+         String words[] = new String[n];
+        String temp; //StringBuilder
         for (int i = 0; i < n; ++i) {
             temp = "";
             for (int j = 0; j < p; ++j)
                 temp += alphabet[(int) (Math.random() * k)];
-            words.add(temp);
+            words[i]=temp;
         }
-        int sz=words.size();
-        long code_occ[] = new long[sz];
+        long[] code_occ = new long[n];
 
-        for (int i=0;i<sz;++i) {
-            for(int j=0;j<words.get(i).length();++j) {
-                current_char=words.get(i).charAt(j);
+        for (int i=0;i<n;++i) {
+            for(int j=0;j<words[i].length();++j) {
+                current_char=words[i].charAt(j);
                 if (current_char < 'a') {
                     code_occ[i] = code_occ[i] | (1<<(current_char - 'A'));
                 }
@@ -67,16 +118,50 @@ public class Tema1 {
                 }
             }
         }
-        boolean neighbors[][]= new boolean[sz][sz];
-        for(int i=0;i<sz;++i) {
-            for (int j = 0; j < sz; ++j) {
-                if ((code_occ[i] & code_occ[j]) != 0) {
+        boolean[][] neighbors= new boolean[n][n];
+        Adjacency[] lst= new Adjacency[n];
+        for(int i=0;i<n;++i) {
+            k=0;
+         lst[i]=new Adjacency();
+            for (int j = 0; j < n; ++j) {
+                if ((code_occ[i] & code_occ[j]) != 0 && i!=j) {
+                    lst[i].adj.add(words[j]);
                     neighbors[i][j] = true;
+                    k++;
                 }
             }
         }
-            System.out.println(code_occ[0]);
-            System.out.println(words);
 
+        if(n<50) {
+            for (Adjacency i:lst) {
+                System.out.println(i.adj);
+            }
+        }
+     /**   for (int i=0;i<n;++i)
+        {
+            System.out.println(words[i]);
+        }
+
+        System.out.println(";");
+      **/
+     int fnd=0;
+        int[] found=new int[n+1];
+        String[] used_words=new String[n];
+        for(int i=0;i<n;++i) {
+            found[i]=1;
+            if (findCycle(i, neighbors, n, found, words, used_words) != 0) {
+                fnd=1;
+                break;
+            }
+            for(int j=0;j<n;++j)
+                found[i]=0;
+        }
+        if(fnd==0)
+            System.out.println("Nu am gasit o submultime cu proprietatea data");
+
+        if(n>=50) {
+            long endTime = System.nanoTime();
+            System.out.println(endTime - startTime + " nanoseconds");
+        }
     }
 }
