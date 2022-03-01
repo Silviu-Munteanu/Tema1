@@ -1,1 +1,3 @@
-# Tema1
+-validarea argumentelor: verifica daca sunt cel putin 3 argumente (n,p,o litera din alfabet), face isDigit pe fiecare caracter din n,p (pentru a fi nr. nat.) si isLetter pentru litere. De asemenea verifica daca literele din alfebet sunt distincte (case sensitive);
+-se creeaza vectorul de stringuri cu String words[] = new String[n];, si se genereaza cuvinte de lungime p din vectorul care memoreaza alfabetul folosind Math.random(),se afiseaza vectorul;
+-se codifica intr-un integer pe 64 biti(long) literele care arpar in cuvant. 1 pe bitul 0- daca exista a,1 pe bitul 1-daca exista b,...pe bitul 27 daca exista A samd. Se face & pe biti. Daca rezultatul este diferit de 0, cuvintele sunt vecine;
